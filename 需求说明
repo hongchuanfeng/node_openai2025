@@ -1,0 +1,242 @@
+# 传道AI 网站需求说明
+
+## 一、项目概述
+
+使用 Next.js 开发一个名为"传道AI"的在线工具网站。
+
+- **网站域名**：https://www.openai2025.com/
+- **版本要求**：仅中文版本
+- **适配要求**：PC端和移动端适配，兼容各种主流浏览器
+
+## 二、SEO 相关要求
+
+1. 有利于 Google 搜索引擎收录
+2. SEO 优化支持
+3. Sitemap 网站地图
+4. Robots.txt 协议文件
+5. Google Analytics 数据分析
+6. Google Search Console 搜索控制台
+
+## 三、功能模块
+
+### 1、生活工具
+
+| 序号 | 工具名称 | 序号 | 工具名称 |
+|:---:|---------|:---:|---------|
+| 1 | 天气预报 | 2 | 汇率查询 |
+| 3 | 股票查询 | 4 | 新闻查询 |
+| 5 | 地图查询 | 6 | 翻译查询 |
+| 7 | 计算器 | 8 | 单位转换 |
+| 9 | 身份证查询 | 10 | 邮政编码查询 |
+| 11 | 中国节日查询 | 12 | 世界时间表 |
+| 13 | 亲戚关系计算器 | 14 | IP地址归属地查询 |
+| 15 | 密码生成器 | 16 | 摩斯电码 |
+| 17 | 文字转语音 | 18 | 番茄时钟 |
+| 19 | 在线计算器 | 20 | 二维码生成 |
+| 21 | 孩子身高预测 | 22 | 生男生女预测 |
+| 23 | 吸烟成本计算器 | 24 | 摄像头测试 |
+| 25 | 麦克风测试工具 | 26 | 色盲测试 |
+| 27 | 体重BMI计算器 | 28 | 手机号归属地查询 |
+| 29 | 人民币转大写 | 30 | 中文繁简体转换 |
+| 31 | 姓名生成器 | 32 | 二维码解析 |
+| 33 | 条形码生成器 | 34 | GUID生成工具 |
+| 35 | 网页Meta标签生成 | 36 | 域名WHOIS查询 |
+| 37 | 域名解析记录查询 | 38 | 随机IP地址生成器 |
+| 39 | 中国历史朝代查询表 | 40 | 中国省份简称及省会大全 |
+| 41 | 元素周期表 | 42 | 电子签名生成器 |
+| 43 | 车贷计算器 | 44 | 汉字拼音在线转换 |
+
+### 2、图片工具
+
+| 序号 | 工具名称 | 序号 | 工具名称 |
+|:---:|---------|:---:|---------|
+| 1 | Favicon图标生成 | 2 | 图片颜色拾取器 |
+| 3 | 屏幕颜色拾取 | 4 | 图片格式转换 |
+| 5 | 颜色选择器 | 6 | 彩图转黑白 |
+| 7 | Base64转图片 | 8 | 图片转Base64 |
+| 9 | 图片压缩工具 | 10 | 图片转Excel |
+| 11 | 图片马赛克 | 12 | 图片水印处理工具 |
+| 13 | 在线免费转换icon图标 | 14 | 图片裁剪工具 |
+| 15 | 九宫格切图工具 | 16 | 文字生成图片工具 |
+| 17 | 图片拼接工具 | 18 | 图片圆角处理 |
+| 19 | 图片加文字 | 20 | 占位符图片生成 |
+| 21 | 在线生成迷宫图片 | | |
+
+### 3、加密解密
+
+| 序号 | 工具名称 | 序号 | 工具名称 |
+|:---:|---------|:---:|---------|
+| 1 | 字符串/ASCII互换 | 2 | AES加密解密工具 |
+| 3 | DES加密解密工具 | 4 | JWT在线解密 |
+| 5 | MD5加密 | 6 | SHA加密 |
+| 7 | Shake加密 | 8 | CRC32加密 |
+| 9 | HMAC在线加密工具 | 10 | JS(eval)加密 |
+| 11 | Keccak在线加密工具 | 12 | Rabbit加密 |
+| 13 | RC4在线加密工具 | 14 | RIPEMD160加密 |
+| 15 | TripleDES加密 | | |
+
+### 4、编码解码
+
+| 序号 | 工具名称 | 序号 | 工具名称 |
+|:---:|---------|:---:|---------|
+| 1 | Gzip编码/解码 | 2 | DecodeURL编码工具 |
+| 3 | EncodeURL编码工具 | 4 | Base64编码/解码 |
+| 5 | Base64/Hex互转工具 | 6 | Base64/文件互转工具 |
+| 7 | HEX与字符转换工具 | 8 | Punycode编码/解码工具 |
+| 9 | Unicode/ASCII转换工具 | 10 | Unicode与中文互转 |
+| 11 | UTF8与中文互转 | 12 | Escape编码 |
+
+### 5、开发工具
+
+| 序号 | 工具名称 | 序号 | 工具名称 |
+|:---:|---------|:---:|---------|
+| 1 | JSON/GET请求字符串互转 | 2 | HTML代码调试预览 |
+| 3 | JSON压缩/格式化 | 4 | JS代码调试 |
+| 5 | XML压缩/格式化 | 6 | 时间差计算器 |
+| 7 | CSS压缩/格式化工具 | 8 | 数据大小转换工具 |
+| 9 | HTML压缩/格式化工具 | 10 | JS压缩/格式化工具 |
+| 11 | 全进制转换工具 | 12 | RGB/HEX颜色转换工具 |
+| 13 | SQL压缩/格式化工具 | 14 | 在线字数统计 |
+| 15 | 文本与二进制转换工具 | 16 | Unix时间戳转换 |
+| 17 | XML/JSON相互转换 | 18 | JSON格式化工具 |
+| 19 | 在线正则表达式测试工具 | 20 | 字符串对比 |
+
+### 6、功能详情要求
+
+每个工具都需要包含以下内容：
+- 功能说明
+- 示例说明
+- 使用方法
+- 注意事项
+- 常见问题
+
+## 四、辅助页面
+
+需要包含以下页面：
+- 关于我们
+- 联系我们
+- 隐私政策
+- 服务条款
+- 免责声明
+- 版权声明
+
+## 五、底部信息
+
+### 版权信息
+```
+© 2025 传道AI · 版权所有
+工业和信息化部 粤ICP备18041392号-7
+```
+
+### 友情链接
+
+| 序号 | 网站名称 | 网址 |
+|:---:|---------|-----|
+| 1 | 免费图片处理 | https://mosaic.chdaoai.com/ |
+| 2 | IceBreakGame | https://www.icebreakgame.com/ |
+| 3 | 视频去水印 | https://www.removewatermarker.com/ |
+| 4 | PDF转换工具 | https://pdf.chdaoai.com/ |
+| 5 | 在线生成二维码 | https://qrcode.chdaoai.com/ |
+| 6 | NBA趣事 | https://www.zorezoro.com/ |
+| 7 | 视频转文字 | https://video2txt.zorezoro.com/ |
+| 8 | 图片去水印 | https://www.chdaoai.com/ |
+
+
+邮箱：support@openai2025.com
+地址：深圳市龙华区龙华大道130栋
+
+
+
+
+对图片工具再加上如下功能和页面：
+
+去除背景
+灰度处理
+放大图片
+更换背景
+照片修复
+图片旋转
+去除水印
+图片上色
+查看EXIF
+
+
+在”加密解密“菜单下面再加上如下功能和页面，
+
+RC5/RC6加密解密
+Blowfish/Twofish加密解密
+ChaCha20加密解密
+SM4加密解密
+SM2加密解密
+RSA加密解密
+ECC加密解密
+DSA加密解密
+Ed25519加密解密
+ElGamal加密解密
+BLAKE2/BLAKE3加密解密
+bcrypt加密解密
+Argon2加密解密
+PBKDF2加密解密
+scrypt加密解密
+
+
+在”编码解码“菜单下面再加上如下功能和页面，
+Base32编码解码
+Base16编码解码
+Base85 / Ascii85编码解码
+MessagePack编码解码  
+Thrift编码解码
+BSON编码解码
+Quoted-Printable编码解码
+UUDecode / UUEncode编码解码
+YEnc编码解码
+JSON编码解码
+
+
+在“图片工具”后面再加上一个“PDF工具”菜单栏：
+有如下功能：
+PDF合并
+PDF拆分
+PDF去重
+PDF转换word
+PDF转换excel
+PDF转换ppt
+PDF转换txt
+PDF转换图片
+PDF转换html
+PDF转换markdown
+word转PDF
+excel转PDF
+ppt转PDF
+txt转PDF
+图片转PDF
+html转PDF
+markdown转PDF
+PDF添加水印
+PDF去水印
+PDF压缩
+PDF加密
+PDF解密
+CSV合并
+CSV拆分
+CSV去重
+
+
+
+所有页面都加上如下代码：
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HWMGEQS9C0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HWMGEQS9C0');
+</script>
+
+
+
+
+所有页面都加上如下代码：
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7274710287377352"
+     crossorigin="anonymous"></script>
