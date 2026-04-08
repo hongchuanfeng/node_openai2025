@@ -223,6 +223,27 @@ CSV去重
 
 
 
+
+在“PDF工具”后面再加上一个“字幕音频工具”菜单栏：
+有如下功能：
+文字转字幕
+字幕转文字
+格式转化
+字幕合并
+音频剪辑合并
+格式转换
+人声分离
+音频转文字
+音频转字幕
+音频修复
+
+上面功能都使用next.js实现，明白我的意思吗？
+
+
+字幕音频工具在这个下面再加上一个“文字转为音频”功能，请实现。
+
+
+
 所有页面都加上如下代码：
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HWMGEQS9C0"></script>

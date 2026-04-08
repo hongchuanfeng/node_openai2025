@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@pdfsmaller/pdf-decrypt": "^1.0.1",
+    "audiobuffer-to-wav": "^1.0.0",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "coherentpdf": "^2.5.5",

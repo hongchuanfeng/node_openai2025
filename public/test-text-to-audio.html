@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>文字转音频 自测v3</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; background: #1a1a1a; color: #eee; }
+  button { padding: 10px 24px; background: #4f46e5; color: #fff; border: none; border-radius: 6px; cursor: pointer; margin: 4px; font-size: 14px; }
+  button:disabled { background: #555; cursor: not-allowed; }
+  #log { background: #0d0d0d; border: 1px solid #333; padding: 12px; margin-top: 16px; height: 180px; overflow-y: auto; font-size: 12px; font-family: monospace; white-space: pre-wrap; }
+  .ok { color: #4ade80; } .err { color: #f87171; } .info { color: #60a5fa; }
+  audio { width: 100%; margin-top: 12px; display: block; }
+  h2 { margin-bottom: 4px; } p { color: #aaa; margin: 0 0 12px; font-size: 13px; }
+</style>
+</head>
+<body>
+<h2>文字转音频 — 自测 v3</h2>
+<p>同时测试 blob URL 和 base64 data URL 两种方式</p>
+
+<button id="btnBlob">Blob URL 播放</button>
+<button id="btnBase64">Base64 DataURL 播放</button>
+<button id="btnText">生成文字音频</button>
+
+<div id="result"></div>
+<div id="log"></div>
+
+<script>
+// ── WAV 编码 ──────────────────────────────────────────────────────────────
+function encodeWavPcm(audioBuffer) {
+  const numChannels = audioBuffer.numberOfChannels;
+  const sampleRate = audioBuffer.sampleRate;
+  const bitsPerSample = 16;
+  const blockAlign = numChannels * (bitsPerSample / 8);
+  const byteRate = sampleRate * blockAlign;
+  const numFrames = audioBuffer.length;
+  const dataBytes = numFrames * blockAlign;
+  const buffer = new ArrayBuffer(44 + dataBytes);
+  const view = new DataView(buffer);
+
+  const writeStr = (offset, str) => {
+    for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+  };
+
+  writeStr(0, 'RIFF');
+  view.setUint32(4, 36 + dataBytes, true);
+  writeStr(8, 'WAVE');
+  writeStr(12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, numChannels, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, byteRate, true);
+  view.setUint16(32, blockAlign, true);
+  view.setUint16(34, bitsPerSample, true);
+  writeStr(36, 'data');
+  view.setUint32(40, dataBytes, true);
+
+  const channelData = [];
+  for (let ch = 0; ch < numChannels; ch++) channelData.push(audioBuffer.getChannelData(ch));
+
+  let pos = 44;
+  for (let frame = 0; frame < numFrames; frame++) {
+    for (let ch = 0; ch < numChannels; ch++) {
+      const s = Math.max(-1, Math.min(1, channelData[ch][frame]));
+      view.setInt16(pos, s < 0 ? s * 32768 : s * 32767, true);
+      pos += 2;
+    }
+  }
+  return buffer;
+}
+
+// ── 音频合成 ──────────────────────────────────────────────────────────────
+async function synthesize(text) {
+  const chars = text.split('').filter(c => c.trim());
+  const SR = 44100;
+  const CHAR_DUR = 0.18;
+  const totalFrames = Math.ceil(chars.length * CHAR_DUR * SR);
+
+  const ctx = new OfflineAudioContext(1, totalFrames, SR);
+  const masterGain = ctx.createGain();
+  masterGain.connect(ctx.destination);
+  masterGain.gain.value = 0.7;
+
+  chars.forEach((ch, i) => {
+    const code = ch.charCodeAt(0);
+    const baseF = 150 + (((code * 7 + (code % 5)) % 24) / 24) * 120;
+    const freq = baseF * Math.pow(2, (i % 6) * 1.5 / 24);
+    const startTime = i * CHAR_DUR;
+
+    const osc = ctx.createOscillator();
+    const charGain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    osc.connect(charGain);
+    charGain.connect(masterGain);
+
+    charGain.gain.setValueAtTime(0, startTime);
+    charGain.gain.linearRampToValueAtTime(0.8, startTime + CHAR_DUR * 0.05);
+    charGain.gain.setValueAtTime(0.8, startTime + CHAR_DUR * 0.88);
+    charGain.gain.linearRampToValueAtTime(0, startTime + CHAR_DUR);
+
+    osc.start(startTime);
+    osc.stop(startTime + CHAR_DUR);
+  });
+
+  return ctx.startRendering();
+}
+
+async function synthesizeSimpleTone() {
+  const ctx = new OfflineAudioContext(1, 44100 * 1, 44100);
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.frequency.value = 440;
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  gain.gain.value = 0.5;
+  osc.start(0);
+  osc.stop(1);
+  return ctx.startRendering();
+}
+
+// ── Blob → Base64 ─────────────────────────────────────────────────────────
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+// ── DOM helpers ───────────────────────────────────────────────────────────
+const logEl = document.getElementById('log');
+const resultDiv = document.getElementById('result');
+
+function log(msg, type = 'info') {
+  const d = document.createElement('div');
+  d.className = type;
+  d.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+  logEl.appendChild(d);
+  logEl.scrollTop = logEl.scrollHeight;
+  console.log(`[${type}]`, msg);
+}
+
+function showAudio(url, label, useSrcObject = false) {
+  resultDiv.innerHTML = `
+    <p class="ok">${label}</p>
+    <audio id="testAudio" src="${url}" controls preload="auto"></audio>
+    <p style="font-size:12px;color:#888;margin:4px 0">URL 前50字符: ${url.substring(0, 50)}</p>
+  `;
+  const audio = document.getElementById('testAudio');
+
+  audio.oncanplay = () => log('✅ oncanplay 触发，可以播放', 'ok');
+  audio.onerror = () => log('❌ onerror: ' + (audio.error ? audio.error.message : '未知'), 'err');
+  audio.onnetworkerror = () => log('❌ onnetworkerror', 'err');
+
+  log(`显示音频控件 (${useSrcObject ? 'srcObject' : 'src'})`);
+}
+
+// ── 测试按钮 ──────────────────────────────────────────────────────────────
+document.getElementById('btnBlob').addEventListener('click', async () => {
+  log('测试 Blob URL 方式...');
+  try {
+    const buf = await synthesizeSimpleTone();
+    const wav = encodeWavPcm(buf);
+    const blob = new Blob([wav], { type: 'audio/wav' });
+    log(`Blob: ${blob.size} bytes`, 'ok');
+    const url = URL.createObjectURL(blob);
+    log(`Blob URL: ${url}`, 'info');
+    showAudio(url, '正弦波 440Hz (Blob URL)', false);
+  } catch (e) {
+    log('❌ ' + e.message, 'err');
+  }
+});
+
+document.getElementById('btnBase64').addEventListener('click', async () => {
+  log('测试 Base64 DataURL 方式...');
+  try {
+    const buf = await synthesizeSimpleTone();
+    const wav = encodeWavPcm(buf);
+    const blob = new Blob([wav], { type: 'audio/wav' });
+    log(`Blob: ${blob.size} bytes`, 'ok');
+    const dataUrl = await blobToBase64(blob);
+    log(`Base64 URL 长度: ${dataUrl.length}`, 'ok');
+    showAudio(dataUrl, '正弦波 440Hz (Base64 DataURL)', false);
+  } catch (e) {
+    log('❌ ' + e.message, 'err');
+  }
+});
+
+document.getElementById('btnText').addEventListener('click', async () => {
+  const text = '你好世界';
+  log(`合成文字: "${text}"`);
+  try {
+    const buf = await synthesize(text);
+    log(`渲染完成: ${buf.length} 帧 SR=${buf.sampleRate}`);
+    const wav = encodeWavPcm(buf);
+    log(`WAV: ${wav.byteLength} bytes`, 'ok');
+    const blob = new Blob([wav], { type: 'audio/wav' });
+    log(`Blob: ${blob.size} bytes`, 'ok');
+    const url = URL.createObjectURL(blob);
+    showAudio(url, `文字音频 "${text}"`, false);
+    document.getElementById('btnText').dataset.url = url;
+  } catch (e) {
+    log('❌ ' + e.message, 'err');
+  }
+});
+
+log('页面加载完毕 — 请按顺序测试三个按钮', 'info');
+</script>
+</body>
+</html>

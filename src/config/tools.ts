@@ -7,7 +7,7 @@ export interface Tool {
   path: string;
 }
 
-export type ToolCategory = 'life' | 'image' | 'pdf' | 'encrypt' | 'encode' | 'dev';
+export type ToolCategory = 'life' | 'image' | 'pdf' | 'subtitle-audio' | 'encrypt' | 'encode' | 'dev';
 
 export interface ToolDetail {
   id: string;
@@ -24,6 +24,7 @@ export const toolCategories = [
   { id: 'life', name: '生活工具', icon: 'Home', description: '日常生活所需的实用工具' },
   { id: 'image', name: '图片工具', icon: 'Image', description: '图片处理与编辑工具' },
   { id: 'pdf', name: 'PDF工具', icon: 'FileText', description: 'PDF文档处理转换工具' },
+  { id: 'subtitle-audio', name: '字幕音频工具', icon: 'Subtitles', description: '字幕与音频处理工具' },
   { id: 'encrypt', name: '加密解密', icon: 'Lock', description: '各种加密解密工具' },
   { id: 'encode', name: '编码解码', icon: 'Code', description: '编码格式转换工具' },
   { id: 'dev', name: '开发工具', icon: 'Terminal', description: '程序员开发辅助工具' },
@@ -132,6 +133,19 @@ export const tools: Tool[] = [
   { id: 'pdf-decrypt', name: 'PDF解密', icon: 'Unlock', category: 'pdf', path: '/tools/pdf/decrypt', description: '移除PDF密码' },
   { id: 'csv-merge', name: 'CSV合并', icon: 'GitMerge', category: 'pdf', path: '/tools/pdf/csv-merge', description: '合并多个CSV文件' },
   { id: 'csv-split', name: 'CSV拆分', icon: 'Scissors', category: 'pdf', path: '/tools/pdf/csv-split', description: '拆分CSV文件' },
+
+  // 字幕音频工具
+  { id: 'text-to-subtitle', name: '文字转字幕', icon: 'Type', category: 'subtitle-audio', path: '/tools/subtitle-audio/text-to-subtitle', description: '将文字转换为字幕文件' },
+  { id: 'subtitle-to-text', name: '字幕转文字', icon: 'FileText', category: 'subtitle-audio', path: '/tools/subtitle-audio/subtitle-to-text', description: '从字幕文件提取文字内容' },
+  { id: 'subtitle-format', name: '字幕格式转化', icon: 'RefreshCw', category: 'subtitle-audio', path: '/tools/subtitle-audio/subtitle-format', description: '字幕文件格式互转' },
+  { id: 'subtitle-merge', name: '字幕合并', icon: 'GitMerge', category: 'subtitle-audio', path: '/tools/subtitle-audio/subtitle-merge', description: '合并多个字幕文件' },
+  { id: 'audio-edit-merge', name: '音频剪辑合并', icon: 'Scissors', category: 'subtitle-audio', path: '/tools/subtitle-audio/audio-edit-merge', description: '剪辑合并音频文件' },
+  { id: 'audio-format', name: '音频格式转换', icon: 'FileAudio', category: 'subtitle-audio', path: '/tools/subtitle-audio/audio-format', description: '音频格式互转' },
+  { id: 'vocal-separate', name: '人声分离', icon: 'SplitSquareHorizontal', category: 'subtitle-audio', path: '/tools/subtitle-audio/vocal-separate', description: '从音频中分离人声和背景音' },
+  { id: 'audio-to-text', name: '音频转文字', icon: 'Mic', category: 'subtitle-audio', path: '/tools/subtitle-audio/audio-to-text', description: '将音频转换为文字' },
+  { id: 'audio-to-subtitle', name: '音频转字幕', icon: 'Subtitles', category: 'subtitle-audio', path: '/tools/subtitle-audio/audio-to-subtitle', description: '将音频转换为字幕文件' },
+  { id: 'audio-repair', name: '音频修复', icon: 'Wrench', category: 'subtitle-audio', path: '/tools/subtitle-audio/audio-repair', description: '修复损坏的音频文件' },
+  { id: 'text-to-audio', name: '文字转音频', icon: 'FileAudio', category: 'subtitle-audio', path: '/tools/subtitle-audio/text-to-audio', description: '将文字转换为可下载的音频文件' },
 
   // 加密解密
   { id: 'ascii', name: '字符串/ASCII互换', icon: 'Text', category: 'encrypt', path: '/tools/encrypt/ascii', description: '字符与ASCII码转换' },

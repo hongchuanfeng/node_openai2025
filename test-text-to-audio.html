@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>文字转音频 自测页</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; background: #1a1a1a; color: #eee; }
+  textarea { width: 100%; height: 80px; background: #2a2a2a; color: #fff; border: 1px solid #555; padding: 8px; }
+  button { padding: 10px 20px; background: #4f46e5; color: #fff; border: none; border-radius: 6px; cursor: pointer; margin: 4px; font-size: 14px; }
+  button:disabled { background: #555; cursor: not-allowed; }
+  #log { background: #0d0d0d; border: 1px solid #333; padding: 12px; margin-top: 16px; height: 200px; overflow-y: auto; font-size: 12px; font-family: monospace; white-space: pre-wrap; }
+  audio { width: 100%; margin-top: 12px; display: block; }
+  .ok { color: #4ade80; }
+  .err { color: #f87171; }
+  .info { color: #60a5fa; }
+  .warn { color: #fbbf24; }
+  #result { margin-top: 16px; display: none; }
+  #error-box { margin-top: 12px; display: none; color: #f87171; background: #2a1a1a; border: 1px solid #7f1d1d; padding: 10px; border-radius: 6px; }
+</style>
+</head>
+<body>
+<h2>文字转音频 — 独立自测页</h2>
+<p style="color:#aaa">与 page.tsx 完全一致的合成逻辑，绕过 React，直接验证核心算法</p>
+
+<textarea id="inputText">你好世界</textarea><br>
+<button id="btnGen">生成音频</button>
+<button id="btnDown" disabled>下载 WAV</button>
+<button id="btnPlay" disabled>播放</button>
+
+<div id="result">
+  <audio id="audioEl" controls></audio>
+</div>
+<div id="error-box"></div>
+<div id="log"></div>
+
+<script>
+// ──────────────────────────────────────────────────────────────
+//  encodeWav — 与 page.tsx 逐行一致
+// ──────────────────────────────────────────────────────────────
+function encodeWav(audioBuffer) {
+  const numChannels = audioBuffer.numberOfChannels;
+  const sampleRate = audioBuffer.sampleRate;
+  const bitsPerSample = 16;
+  const bytesPerSample = bitsPerSample / 8;
+  const blockAlign = numChannels * bytesPerSample;
+  const byteRate = sampleRate * blockAlign;
+  const dataSize = audioBuffer.length * blockAlign;
+  const buffer = new ArrayBuffer(44 + dataSize);
+  const view = new DataView(buffer);
+
+  const writeStr = (offset, str) => {
+    for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+  };
+
+  writeStr(0, 'RIFF');
+  view.setUint32(4, 36 + dataSize, true);
+  writeStr(8, 'WAVE');
+  writeStr(12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, numChannels, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, byteRate, true);
+  view.setUint16(32, blockAlign, true);
+  view.setUint16(34, bitsPerSample, true);
+  writeStr(36, 'data');
+  view.setUint32(40, dataSize, true);
+
+  const channelData = [];
+  for (let ch = 0; ch < numChannels; ch++) channelData.push(audioBuffer.getChannelData(ch));
+
+  let pos = 44;
+  for (let i = 0; i < audioBuffer.length; i++) {
+    for (let ch = 0; ch < numChannels; ch++) {
+      const s = Math.max(-1, Math.min(1, channelData[ch][i]));
+      view.setInt16(pos, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+      pos += 2;
+    }
+  }
+  return buffer;
+}
+
+function charToFreq(ch, base) {
+  const code = ch.charCodeAt(0);
+  return base * Math.pow(2, ((code * 7 + (code % 5)) % 24) / 24);
+}
+
+// ──────────────────────────────────────────────────────────────
+//  UI 绑��
+// ──────────────────────────────────────────────────────────────
+const btnGen = document.getElementById('btnGen');
+const btnDown = document.getElementById('btnDown');
+const btnPlay = document.getElementById('btnPlay');
+const inputText = document.getElementById('inputText');
+const audioEl = document.getElementById('audioEl');
+const logEl = document.getElementById('log');
+const resultDiv = document.getElementById('result');
+const errorBox = document.getElementById('error-box');
+
+let currentUrl = null;
+let isPlaying = false;
+
+function log(msg, type = 'info') {
+  const line = document.createElement('div');
+  line.className = type;
+  line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+  logEl.appendChild(line);
+  logEl.scrollTop = logEl.scrollHeight;
+  console.log(`[${type}] ${msg}`);
+}
+
+function showError(msg) {
+  errorBox.textContent = msg;
+  errorBox.style.display = 'block';
+  log(msg, 'err');
+}
+
+function clearError() {
+  errorBox.style.display = 'none';
+  errorBox.textContent = '';
+}
+
+// ──────────────────────────────────────────────────────────────
+//  核心合成
+// ──────────────────────────────────────────────────────────────
+async function synthesize(text) {
+  clearError();
+
+  if (!text.trim()) {
+    showError('请输入要转换的文字');
+    return;
+  }
+
+  const SR = 16000;
+  const CHAR_DUR = 0.18;
+  const chars = text.split('').filter(c => c.trim());
+
+  if (chars.length === 0) {
+    showError('请输入有效的文字内容');
+    return;
+  }
+
+  log(`有效字符: ${chars.length} 个`);
+  const totalSamples = Math.ceil(chars.length * CHAR_DUR * SR);
+  log(`采样点数: ${totalSamples}，时长了 ${(totalSamples/SR).toFixed(2)}s`);
+
+  const ctx = new AudioContext({ sampleRate: SR });
+  log(`AudioContext sampleRate: ${ctx.sampleRate}`);
+
+  const buf = ctx.createBuffer(1, totalSamples, SR);
+  const d = buf.getChannelData(0);
+
+  log('开始逐字合成波形...');
+  for (let i = 0; i < chars.length; i++) {
+    const ch = chars[i];
+    const s0 = Math.floor(i * CHAR_DUR * SR);
+    const s1 = Math.floor((i + 1) * CHAR_DUR * SR);
+    const len = Math.max(1, s1 - s0);
+    const baseF = 180 + (i % 6) * 25;
+
+    for (let s = 0; s < len; s++) {
+      const idx = s0 + s;
+      if (idx >= d.length) break;
+
+      const relPos = s / len;
+      const env = relPos < 0.05 ? relPos / 0.05 : relPos > 0.88 ? (1 - relPos) / 0.12 : 1;
+      const t = s / SR;
+      const f = charToFreq(ch, baseF);
+
+      const v = (
+        Math.sin(2 * Math.PI * f * t) * 0.55 +
+        Math.sin(2 * Math.PI * f * 2.01 * t) * 0.22 +
+        Math.sin(2 * Math.PI * f * 3.02 * t) * 0.1 +
+        Math.sin(2 * Math.PI * f * 4.03 * t) * 0.05 +
+        Math.sin(2 * Math.PI * f * 5.04 * t) * 0.03 +
+        (Math.random() * 2 - 1) * 0.012
+      ) * env * 0.28;
+
+      d[idx] = Number.isFinite(v) ? v : 0;
+    }
+
+    if (i % 100 === 0 || i === chars.length - 1) {
+      log(`  合成进度: ${i + 1}/${chars.length}`);
+      await new Promise(r => setTimeout(r, 0));
+    }
+  }
+
+  log('波形合成完成，开始 WAV 编码...');
+  const wavBuf = encodeWav(buf);
+  log(`WAV buffer 大小: ${wavBuf.byteLength} bytes`, 'ok');
+
+  const blob = new Blob([wavBuf], { type: 'audio/wav' });
+  log(`Blob size: ${blob.size} bytes, type: ${blob.type}`, 'ok');
+
+  if (blob.size === 0) {
+    throw new Error('音频数据为空');
+  }
+
+  if (currentUrl) URL.revokeObjectURL(currentUrl);
+  currentUrl = URL.createObjectURL(blob);
+  log(`ObjectURL: ${currentUrl}`, 'ok');
+
+  audioEl.src = currentUrl;
+  resultDiv.style.display = 'block';
+  btnDown.disabled = false;
+  btnPlay.disabled = false;
+
+  log('✅ 生成成功！可播放或下载', 'ok');
+
+  ctx.close().catch(() => {});
+  return currentUrl;
+}
+
+// ──────────────────────────────────────────────────────────────
+//  事件
+// ──────────────────────────────────────────────────────────────
+btnGen.addEventListener('click', async () => {
+  btnGen.disabled = true;
+  btnPlay.disabled = true;
+  btnDown.disabled = true;
+  isPlaying = false;
+  btnPlay.textContent = '播放';
+  try {
+    await synthesize(inputText.value);
+  } catch (err) {
+    showError('生成失败: ' + err.message);
+  }
+  btnGen.disabled = false;
+});
+
+btnPlay.addEventListener('click', () => {
+  if (isPlaying) {
+    audioEl.pause();
+    audioEl.currentTime = 0;
+    isPlaying = false;
+    btnPlay.textContent = '播放';
+  } else {
+    audioEl.currentTime = 0;
+    audioEl.play().then(() => {
+      isPlaying = true;
+      btnPlay.textContent = '停止';
+    }).catch(e => {
+      showError('播放失败: ' + e.message);
+    });
+  }
+});
+
+audioEl.addEventListener('ended', () => {
+  isPlaying = false;
+  btnPlay.textContent = '播放';
+});
+
+btnDown.addEventListener('click', () => {
+  if (!currentUrl) return;
+  const a = document.createElement('a');
+  a.href = currentUrl;
+  a.download = 'text_to_audio.wav';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+});
+
+log('页面加载完毕，点击「生成音频」开始测试', 'info');
+</script>
+</body>
+</html>
