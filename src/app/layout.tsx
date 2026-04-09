@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import Analytics from '@/components/Analytics';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.openai2025.com'),
@@ -35,28 +36,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-CN">
-      <head>
-        <script
-          async
-          src="https://www.googletagmanager.com/gtag/js?id=G-HWMGEQS9C0"
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-HWMGEQS9C0');
-            `,
-          }}
-        />
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7274710287377352"
-          crossOrigin="anonymous"
-        />
-      </head>
+      <head></head>
       <body className="antialiased min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800">
+        <Analytics />
         {children}
       </body>
     </html>
