@@ -4,7 +4,7 @@ import Footer from '@/components/Footer';
 import SearchBar from '@/components/SearchBar';
 import ToolCard from '@/components/ToolCard';
 import { toolCategories, tools, ToolCategory } from '@/config/tools';
-import { ArrowRight, Sparkles, Zap, Shield, Code, Image, Home, Star, TrendingUp, File, ChevronRight } from 'lucide-react';
+import { ArrowRight, Sparkles, Zap, Shield, Code, Image, Home, Star, TrendingUp, File, ChevronRight, Subtitles } from 'lucide-react';
 
 const categoryIcons: Record<string, React.ReactNode> = {
   life: <Home className="w-5 h-5" />,
@@ -13,6 +13,7 @@ const categoryIcons: Record<string, React.ReactNode> = {
   encrypt: <Shield className="w-5 h-5" />,
   encode: <Code className="w-5 h-5" />,
   dev: <Zap className="w-5 h-5" />,
+  'subtitle-audio': <Subtitles className="w-5 h-5" />,
 };
 
 const categoryGradients: Record<string, string> = {
@@ -22,12 +23,13 @@ const categoryGradients: Record<string, string> = {
   encrypt: 'from-violet-500 to-purple-500',
   encode: 'from-amber-500 to-orange-500',
   dev: 'from-blue-500 to-cyan-500',
+  'subtitle-audio': 'from-indigo-500 to-blue-500',
 };
 
 export default function HomePage() {
-  // 每个分类取8个工具
+  // 获取分类的所有工具
   const getCategoryTools = (categoryId: string) => {
-    return tools.filter(t => t.category === categoryId).slice(0, 8);
+    return tools.filter(t => t.category === categoryId);
   };
 
   return (
@@ -46,7 +48,7 @@ export default function HomePage() {
             <div className="text-center max-w-4xl mx-auto">
               <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm font-medium mb-8">
                 <Star className="w-4 h-4 text-yellow-400" />
-                <span>175+ 实用在线工具</span>
+                <span>200+ 实用在线工具</span>
               </div>
 
               <h1 className="text-5xl md:text-7xl font-bold text-white mb-8 tracking-tight">
@@ -160,8 +162,8 @@ export default function HomePage() {
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
               {[
-                { label: '工具总数', value: '175+', color: 'text-blue-400' },
-                { label: '分类数量', value: '6', color: 'text-emerald-400' },
+                { label: '工具总数', value: '200+', color: 'text-blue-400' },
+                { label: '分类数量', value: '7', color: 'text-emerald-400' },
                 { label: '每日使用', value: '10,000+', color: 'text-purple-400' },
                 { label: '用户好评', value: '99%', color: 'text-pink-400' },
               ].map((stat, i) => (
