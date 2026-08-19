@@ -5,9 +5,10 @@ export interface Tool {
   description: string;
   category: ToolCategory;
   path: string;
+  externalUrl?: string;
 }
 
-export type ToolCategory = 'life' | 'image' | 'pdf' | 'subtitle-audio' | 'encrypt' | 'encode' | 'dev';
+export type ToolCategory = 'life' | 'image' | 'pdf' | 'subtitle-audio' | 'encrypt' | 'encode' | 'dev' | 'qrcode';
 
 export interface ToolDetail {
   id: string;
@@ -25,6 +26,7 @@ export const toolCategories = [
   { id: 'image', name: '图片工具', icon: 'Image', description: '图片处理与编辑工具' },
   { id: 'pdf', name: 'PDF工具', icon: 'FileText', description: 'PDF文档处理转换工具' },
   { id: 'subtitle-audio', name: '字幕音频工具', icon: 'Subtitles', description: '字幕与音频处理工具' },
+  { id: 'qrcode', name: '条码二维码', icon: 'QrCode', description: '条码与二维码生成识别工具' },
   { id: 'encrypt', name: '加密解密', icon: 'Lock', description: '各种加密解密工具' },
   { id: 'encode', name: '编码解码', icon: 'Code', description: '编码格式转换工具' },
   { id: 'dev', name: '开发工具', icon: 'Terminal', description: '程序员开发辅助工具' },
@@ -32,12 +34,12 @@ export const toolCategories = [
 
 export const tools: Tool[] = [
   // 生活工具
-  { id: 'weather', name: '天气预报', icon: 'Cloud', category: 'life', path: '/tools/life/weather', description: '查询全国天气预报信息' },
-  { id: 'exchange-rate', name: '汇率查询', icon: 'DollarSign', category: 'life', path: '/tools/life/exchange-rate', description: '实时汇率换算查询' },
-  { id: 'stock', name: '股票查询', icon: 'TrendingUp', category: 'life', path: '/tools/life/stock', description: '股票行情实时查询' },
-  { id: 'news', name: '新闻查询', icon: 'Newspaper', category: 'life', path: '/tools/life/news', description: '最新资讯新闻浏览' },
-  { id: 'map', name: '地图查询', icon: 'Map', category: 'life', path: '/tools/life/map', description: '地理位置查询导航' },
-  { id: 'translate', name: '翻译查询', icon: 'Languages', category: 'life', path: '/tools/life/translate', description: '多语言翻译服务' },
+  { id: 'weather', name: '天气预报', icon: 'Cloud', category: 'life', path: '/tools/life/weather', description: '查询全国天气预报信息', externalUrl: 'https://weather.cma.cn' },
+  { id: 'exchange-rate', name: '汇率查询', icon: 'DollarSign', category: 'life', path: '/tools/life/exchange-rate', description: '实时汇率换算查询', externalUrl: 'https://www.xe.com/zh-cn/' },
+  { id: 'stock', name: '股票查询', icon: 'TrendingUp', category: 'life', path: '/tools/life/stock', description: '股票行情实时查询', externalUrl: 'https://www.eastmoney.com' },
+  { id: 'news', name: '新闻查询', icon: 'Newspaper', category: 'life', path: '/tools/life/news', description: '最新资讯新闻浏览', externalUrl: 'https://news.google.com' },
+  { id: 'map', name: '地图查询', icon: 'Map', category: 'life', path: '/tools/life/map', description: '地理位置查询导航', externalUrl: 'https://maps.google.com' },
+  { id: 'translate', name: '翻译查询', icon: 'Languages', category: 'life', path: '/tools/life/translate', description: '多语言翻译服务', externalUrl: 'https://translate.google.com' },
   { id: 'calculator', name: '计算器', icon: 'Calculator', category: 'life', path: '/tools/life/calculator', description: '基础数学计算工具' },
   { id: 'unit-convert', name: '单位转换', icon: 'Scale', category: 'life', path: '/tools/life/unit-convert', description: '各种单位之间转换' },
   { id: 'id-card', name: '身份证查询', icon: 'CreditCard', category: 'life', path: '/tools/life/id-card', description: '身份证信息验证查询' },
@@ -146,6 +148,13 @@ export const tools: Tool[] = [
   { id: 'audio-to-subtitle', name: '音频转字幕', icon: 'Subtitles', category: 'subtitle-audio', path: '/tools/subtitle-audio/audio-to-subtitle', description: '将音频转换为字幕文件' },
   { id: 'audio-repair', name: '音频修复', icon: 'Wrench', category: 'subtitle-audio', path: '/tools/subtitle-audio/audio-repair', description: '修复损坏的音频文件' },
   { id: 'text-to-audio', name: '文字转音频', icon: 'FileAudio', category: 'subtitle-audio', path: '/tools/subtitle-audio/text-to-audio', description: '将文字转换为可下载的音频文件' },
+
+  // 条码二维码
+  { id: 'qrcode-generate', name: '生成二维码', icon: 'QrCode', category: 'qrcode', path: '/tools/qrcode/generate', description: '生成各种格式的二维码' },
+  { id: 'barcode-generate', name: '生成条形码', icon: 'Barcode', category: 'qrcode', path: '/tools/qrcode/barcode', description: '生成多种类型的条形码' },
+  { id: 'qrcode-decode', name: '识别二维码', icon: 'Scan', category: 'qrcode', path: '/tools/qrcode/decode', description: '识别图片中的二维码内容' },
+  { id: 'barcode-decode', name: '识别条形码', icon: 'Scan', category: 'qrcode', path: '/tools/qrcode/barcode-decode', description: '识别图片中的条形码' },
+  { id: 'qrcode-batch', name: '批量生成', icon: 'List', category: 'qrcode', path: '/tools/qrcode/batch', description: '批量生成二维码和条形码' },
 
   // 加密解密
   { id: 'ascii', name: '字符串/ASCII互换', icon: 'Text', category: 'encrypt', path: '/tools/encrypt/ascii', description: '字符与ASCII码转换' },

@@ -3,8 +3,9 @@
 import { useState, useCallback } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Upload, FileText, Download, Info } from 'lucide-react';
+import { Upload, FileText, Download, Info, Package } from 'lucide-react';
 import { PDFDocument } from 'pdf-lib';
+import JSZip from 'jszip';
 
 export default function PdfSplitPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -12,6 +13,7 @@ export default function PdfSplitPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [splits, setSplits] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   const handleUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const uploaded = e.target.files?.[0];
@@ -67,6 +69,30 @@ export default function PdfSplitPage() {
     splits.forEach((url, idx) => downloadSplit(url, idx));
   };
 
+  const downloadAsZip = async () => {
+    setDownloading(true);
+    try {
+      const zip = new JSZip();
+      const baseName = file?.name.replace('.pdf', '') || 'split';
+
+      for (let i = 0; i < splits.length; i++) {
+        const response = await fetch(splits[i]);
+        const blob = await response.blob();
+        zip.file(`${baseName}_part${i + 1}.pdf`, blob);
+      }
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(zipBlob);
+      link.download = `${baseName}_split.zip`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    } catch {
+      alert('打包下载失败');
+    }
+    setDownloading(false);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -116,9 +142,14 @@ export default function PdfSplitPage() {
               <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-8">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="font-bold text-slate-900 dark:text-white">拆分结果（共{splits.length}份）</h3>
-                  <button onClick={downloadAll} className="px-4 py-2 bg-green-500 text-white rounded-lg text-sm hover:bg-green-600">
-                    下载全部
-                  </button>
+                  <div className="flex gap-2">
+                    <button onClick={downloadAll} className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 flex items-center gap-1">
+                      <Download className="w-4 h-4" /> 下载全部
+                    </button>
+                    <button onClick={downloadAsZip} disabled={downloading} className="px-4 py-2 bg-amber-500 text-white rounded-lg text-sm hover:bg-amber-600 flex items-center gap-1 disabled:opacity-50">
+                      <Package className="w-4 h-4" /> {downloading ? '打包中...' : '打包下载'}
+                    </button>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   {splits.map((url, idx) => (

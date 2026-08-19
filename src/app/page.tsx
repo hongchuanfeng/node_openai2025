@@ -116,29 +116,9 @@ export default function HomePage() {
                 </div>
 
                 {/* Tools Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 md:gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {categoryTools.map((tool) => (
-                    <Link
-                      key={tool.id}
-                      href={tool.path}
-                      className="group flex items-center gap-3 p-3 md:p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md hover:shadow-blue-500/10 transition-all duration-200"
-                    >
-                      <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${gradient} p-0.5 shrink-0 group-hover:scale-110 transition-transform`}>
-                        <div className="w-full h-full rounded-lg bg-white dark:bg-slate-800 flex items-center justify-center group-hover:text-white transition-colors">
-                          <span className={`text-sm font-bold bg-gradient-to-br ${gradient} bg-clip-text text-transparent`}>
-                            {tool.name.charAt(0)}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="font-medium text-sm text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
-                          {tool.name}
-                        </h3>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 truncate hidden sm:block">
-                          {tool.description}
-                        </p>
-                      </div>
-                    </Link>
+                    <ToolCard key={tool.id} tool={tool} />
                   ))}
                 </div>
 

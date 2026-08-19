@@ -3,7 +3,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ToolCard from '@/components/ToolCard';
 import { tools, toolCategories } from '@/config/tools';
-import { Home, Image, Shield, Code, Zap, Subtitles, FileText } from 'lucide-react';
+import { Home, Image, Shield, Code, Zap, Subtitles, FileText, QrCode } from 'lucide-react';
 import Link from 'next/link';
 
 interface Props {
@@ -15,6 +15,7 @@ const categoryIcons: Record<string, React.ReactNode> = {
   image: <Image className="w-8 h-8" />,
   pdf: <FileText className="w-8 h-8" />,
   'subtitle-audio': <Subtitles className="w-8 h-8" />,
+  qrcode: <QrCode className="w-8 h-8" />,
   encrypt: <Shield className="w-8 h-8" />,
   encode: <Code className="w-8 h-8" />,
   dev: <Zap className="w-8 h-8" />,
@@ -25,6 +26,7 @@ const categoryColors: Record<string, string> = {
   image: 'from-pink-500 to-rose-500',
   pdf: 'from-red-500 to-orange-500',
   'subtitle-audio': 'from-indigo-500 to-purple-500',
+  qrcode: 'from-violet-500 to-blue-500',
   encrypt: 'from-violet-500 to-purple-500',
   encode: 'from-amber-500 to-orange-500',
   dev: 'from-blue-500 to-cyan-500',

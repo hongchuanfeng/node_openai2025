@@ -3,7 +3,8 @@
 import { useState, useCallback } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Upload, Image, Download, Info, Loader2, AlertCircle, FileText, Check } from 'lucide-react';
+import { Upload, Image, Download, Info, Loader2, AlertCircle, FileText, Check, Package } from 'lucide-react';
+import JSZip from 'jszip';
 
 export default function PdfToImagePage() {
   const [file, setFile] = useState<File | null>(null);
@@ -14,6 +15,7 @@ export default function PdfToImagePage() {
   const [pageCount, setPageCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [imageFormat, setImageFormat] = useState<'png' | 'jpeg'>('png');
+  const [downloading, setDownloading] = useState(false);
 
   const handleUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const uploaded = e.target.files?.[0];
@@ -97,6 +99,32 @@ export default function PdfToImagePage() {
     images.forEach((img, index) => {
       setTimeout(() => downloadImage(img.url, img.page), index * 200);
     });
+  };
+
+  const downloadAsZip = async () => {
+    setDownloading(true);
+    try {
+      const zip = new JSZip();
+      const baseName = file?.name.replace('.pdf', '') || 'pdf_pages';
+
+      for (let i = 0; i < images.length; i++) {
+        const img = images[i];
+        const dataUrlParts = img.url.split(',');
+        const mimeType = imageFormat === 'png' ? 'image/png' : 'image/jpeg';
+        const base64 = dataUrlParts[1];
+        zip.file(`${baseName}_page${img.page}.${imageFormat}`, base64, { base64: true });
+      }
+
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(zipBlob);
+      link.download = `${baseName}.zip`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    } catch {
+      alert('打包下载失败');
+    }
+    setDownloading(false);
   };
 
   return (
@@ -210,13 +238,23 @@ export default function PdfToImagePage() {
               <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-8 mb-6">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="font-bold text-slate-900 dark:text-white">转换结果 ({images.length} 页)</h3>
-                  <button 
-                    onClick={downloadAllImages}
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all"
-                  >
-                    <Download className="w-4 h-4" />
-                    下载全部
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={downloadAllImages}
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 transition-all"
+                    >
+                      <Download className="w-4 h-4" />
+                      下载全部
+                    </button>
+                    <button
+                      onClick={downloadAsZip}
+                      disabled={downloading}
+                      className="flex items-center gap-2 px-4 py-2 bg-amber-500 text-white font-medium rounded-lg hover:bg-amber-600 transition-all disabled:opacity-50"
+                    >
+                      <Package className="w-4 h-4" />
+                      {downloading ? '打包中...' : '打包下载'}
+                    </button>
+                  </div>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

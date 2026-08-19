@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { ExternalLink } from 'lucide-react';
 import {
   Cloud, DollarSign, TrendingUp, Newspaper, Map, Languages, Calculator, Scale,
   CreditCard, Mail, Calendar, Globe, Users, Network, Key, Signal, Volume2,
@@ -37,6 +38,57 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 
 export default function ToolCard({ tool, featured }: ToolCardProps) {
   const IconComponent = iconMap[tool.icon] || Star;
+  const isExternal = !!tool.externalUrl;
+
+  const cardContent = (
+    <>
+      <div className="flex items-start gap-4">
+        <div className={clsx(
+          'w-12 h-12 rounded-xl flex items-center justify-center shrink-0',
+          'bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30',
+          'group-hover:from-blue-100 group-hover:to-purple-100',
+          'dark:group-hover:from-blue-900/50 dark:group-hover:to-purple-900/50',
+          'transition-all duration-200'
+        )}>
+          <IconComponent className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <h3 className="font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              {tool.name}
+            </h3>
+            {isExternal && (
+              <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-500" />
+            )}
+          </div>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 line-clamp-2">
+            {tool.description}
+          </p>
+        </div>
+      </div>
+    </>
+  );
+
+  if (isExternal) {
+    return (
+      <a
+        href={tool.externalUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={clsx(
+          'group block p-5 rounded-2xl border transition-all duration-200',
+          'bg-white dark:bg-slate-800',
+          'border-slate-200 dark:border-slate-700',
+          'hover:border-blue-300 dark:hover:border-blue-600',
+          'hover:shadow-lg hover:shadow-blue-500/10',
+          'hover:-translate-y-1',
+          featured && 'ring-2 ring-blue-500/20'
+        )}
+      >
+        {cardContent}
+      </a>
+    );
+  }
 
   return (
     <Link
@@ -51,25 +103,7 @@ export default function ToolCard({ tool, featured }: ToolCardProps) {
         featured && 'ring-2 ring-blue-500/20'
       )}
     >
-      <div className="flex items-start gap-4">
-        <div className={clsx(
-          'w-12 h-12 rounded-xl flex items-center justify-center shrink-0',
-          'bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30',
-          'group-hover:from-blue-100 group-hover:to-purple-100',
-          'dark:group-hover:from-blue-900/50 dark:group-hover:to-purple-900/50',
-          'transition-all duration-200'
-        )}>
-          <IconComponent className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <h3 className="font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-            {tool.name}
-          </h3>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 line-clamp-2">
-            {tool.description}
-          </p>
-        </div>
-      </div>
+      {cardContent}
     </Link>
   );
 }

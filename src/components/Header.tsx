@@ -10,6 +10,7 @@ const navItems = [
   { name: '图片工具', href: '/tools/image' },
   { name: 'PDF工具', href: '/tools/pdf' },
   { name: '字幕音频工具', href: '/tools/subtitle-audio' },
+  { name: '条码二维码', href: '/tools/qrcode' },
   { name: '加密解密', href: '/tools/encrypt' },
   { name: '编码解码', href: '/tools/encode' },
   { name: '开发工具', href: '/tools/dev' },
