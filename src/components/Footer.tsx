@@ -24,18 +24,14 @@ const footerLinks = {
 };
 
 const friendLinks = [
-  { name: '免费图片处理', url: 'https://mosaic.chdaoai.com/' },
-  { name: 'IceBreakGame', url: 'https://www.icebreakgame.com/' },
-  { name: '视频去水印', url: 'https://www.removewatermarker.com/' },
-  { name: 'PDF转换工具', url: 'https://pdf.chdaoai.com/' },
-  { name: '在线生成二维码', url: 'https://qrcode.chdaoai.com/' },
+  { name: '在线免费图片马赛克', url: 'https://mosaic.openai2025.com/' },
+  { name: '免费游戏IceBreakGame', url: 'https://www.icebreakgame.com/' },
+  { name: '视频去水印字幕工具', url: 'https://www.removewatermarker.com/' },
   { name: 'NBA趣事', url: 'https://www.zorezoro.com/' },
-  { name: '视频转文字', url: 'https://video2txt.zorezoro.com/' },
-  { name: '图片去水印', url: 'https://www.chdaoai.com/' },
+  { name: '在线文字转字幕AI工具', url: 'https://www.chdaoai.com/' },
   { name: '中国菜系大全', url: 'https://food.zorezoro.com/' },
   { name: '中国功夫网', url: 'https://gf.zorezoro.com/' },
   { name: '中国24史', url: 'https://china.zorezoro.com/' },
-  { name: '在线条码生成器', url: 'https://barcode.zorezoro.com/' },
   { name: '在线base64工具', url: 'https://www.Base64.club/' },
 ];
 
